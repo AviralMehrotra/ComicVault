@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./button";
 
-const IssuesGrid = ({ totalIssues = 130, readIssues = [] }) => {
+const IssuesGrid = ({ totalIssues = 130, readIssues = [], onIssueClick, comicId }) => {
   const [currentSection, setCurrentSection] = useState(0);
   const issuesPerSection = 30;
   const totalSections = Math.ceil(totalIssues / issuesPerSection);
@@ -43,13 +43,19 @@ const IssuesGrid = ({ totalIssues = 130, readIssues = [] }) => {
       issues.push(
         <div
           key={i}
+          onClick={() => {
+            if (onIssueClick && comicId) {
+              onIssueClick(comicId, i);
+            }
+          }}
           className={`
             aspect-square rounded-lg flex items-center justify-center text-sm font-medium
             cursor-pointer transition-all duration-200 border border-border/50
+            hover:opacity-80 hover:scale-105
             ${getIssueColor(status)}
           `}
           style={getIssueStyle(status)}
-          title={`Issue #${i} - ${status === "read" ? "Read" : "Not Read"}`}
+          title={`Issue #${i} - ${status === "read" ? "Read" : "Not Read"} (Click to toggle)`}
         >
           {i}
         </div>

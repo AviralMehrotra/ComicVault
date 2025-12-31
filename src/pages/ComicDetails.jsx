@@ -1,45 +1,27 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  ArrowLeft,
-  LifeBuoy,
-  Settings,
-  Star,
-  Plus,
-  Check,
-  BookOpen,
-  Users,
-  MapPin,
-  Calendar,
-  Hash,
-} from "lucide-react";
+import { ArrowLeft, BookOpen, Users, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import comicService from "@/services/comicService";
 import { useTitle } from "@/hooks/useTitle";
 import { decodeComicId } from "@/utils/comicUtils";
-import Sidebar, { SidebarItem } from "@/components/layout/Sidebar";
-import { FiSearch } from "react-icons/fi";
-import { RxDashboard } from "react-icons/rx";
-import { MdOutlineForum } from "react-icons/md";
-import SearchOverlay from "@/components/layout/SearchOverlay";
-import { BiBookmarkAlt } from "react-icons/bi";
-import Rating from "@/components/ui/Rating";
+import AppLayout from "@/components/layout/AppLayout";
 import Loader, { WithFadeIn } from "@/components/elements/Loader";
 import CharacterCard from "@/components/ui/CharacterCard";
 import CreatorCard from "@/components/ui/CreatorCard";
-import StatCard from "@/components/ui/StatCard";
 import SectionHeader from "@/components/ui/SectionHeader";
 import ViewAllModal from "@/components/ui/ViewAllModal";
 import IssuesGrid from "@/components/ui/IssuesGrid";
 import collectionService from "@/services/collectionService";
 import EmptyState from "@/components/ui/EmptyState";
+import ComicHeader from "@/components/comic/ComicHeader";
+import ComicActions from "@/components/comic/ComicActions";
 
 const ComicDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [comic, setComic] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [viewAllModal, setViewAllModal] = useState({
     isOpen: false,
     type: "",
@@ -49,13 +31,10 @@ const ComicDetails = () => {
   const [readIssues, setReadIssues] = useState([]);
   const [isInCollection, setIsInCollection] = useState(false);
   const [collectionStatus, setCollectionStatus] = useState(null);
+  const [databaseComicId, setDatabaseComicId] = useState(null); // Database comic_id from comics table
+  const [userComicId, setUserComicId] = useState(null); // user_comics.id for status updates
 
   useTitle(comic?.title || "Comic Details");
-
-  const handleSearch = async (query) => {
-    const result = await comicService.searchComics(query, 10);
-    return result;
-  };
 
   const openViewAllModal = (type, items, title) => {
     setViewAllModal({ isOpen: true, type, items, title });
@@ -65,40 +44,124 @@ const ComicDetails = () => {
     setViewAllModal({ isOpen: false, type: "", items: [], title: "" });
   };
 
+  const fetchReadingProgress = async () => {
+    if (databaseComicId) {
+      try {
+        const result = await collectionService.getReadingProgress(
+          databaseComicId
+        );
+        if (result.success) {
+          setReadIssues(result.data.readIssues || []);
+        }
+      } catch (error) {
+        console.error("Error fetching reading progress:", error);
+      }
+    }
+  };
+
+  const handleIssueClick = async (comicId, issueNumber) => {
+    try {
+      const result = await collectionService.toggleIssueRead(
+        comicId,
+        issueNumber
+      );
+      if (result.success) {
+        // Refresh reading progress after toggling
+        await fetchReadingProgress();
+      } else {
+        console.error("Error toggling issue:", result.error);
+      }
+    } catch (error) {
+      console.error("Error toggling issue:", error);
+    }
+  };
+
   const handleAddToCollection = async (status = "planned") => {
     try {
-      console.log('Comic data being sent:', comic);
-      const result = await collectionService.addToCollection(comic, status);
+      console.log("Comic data being sent:", comic);
+      let result;
+      let newDatabaseComicId = databaseComicId;
+      let newUserComicId = userComicId;
+
+      if (isInCollection) {
+        // Update existing status - use user_comics.id
+        result = await collectionService.updateComicStatus(userComicId, status);
+        if (result.success && result.data) {
+          newUserComicId = result.data.id;
+          // Ensure we have the comic_id
+          if (result.data.comic_id) {
+            newDatabaseComicId = result.data.comic_id;
+          } else {
+            // Preserve existing databaseComicId if not in response
+            newDatabaseComicId = databaseComicId || newDatabaseComicId;
+          }
+        }
+      } else {
+        // Add to collection
+        result = await collectionService.addToCollection(comic, status);
+        if (result.success && result.data) {
+          // Store the database comic_id and user_comics.id from response
+          newDatabaseComicId = result.data.comic_id;
+          newUserComicId = result.data.id;
+        }
+      }
+
       if (result.success) {
         setIsInCollection(true);
         setCollectionStatus(status);
+        setDatabaseComicId(newDatabaseComicId);
+        setUserComicId(newUserComicId);
+
+        // If marking as completed, mark all issues as read
+        if (status === "completed" && comic.issueCount && newDatabaseComicId) {
+          // Mark all issues as read
+          for (let i = 1; i <= comic.issueCount; i++) {
+            await collectionService.toggleIssueRead(newDatabaseComicId, i);
+          }
+          // Refresh reading progress
+          await fetchReadingProgress();
+        }
       } else {
-        console.error('Collection service error:', result.error);
+        console.error("Collection service error:", result.error);
       }
     } catch (error) {
       console.error("Error adding to collection:", error);
     }
   };
 
-  const checkCollectionStatus = async (comicId) => {
+  const checkCollectionStatus = async (comicvineId) => {
     try {
-      const result = await collectionService.checkCollectionStatus(comicId);
+      const result = await collectionService.checkCollectionStatus(comicvineId);
       if (result.success) {
         setIsInCollection(result.data.inCollection);
         setCollectionStatus(result.data.status);
+
+        // If in collection, we need to get the database comic_id
+        if (result.data.inCollection) {
+          // Fetch user comics to get the comic_id
+          const userComicsResult = await collectionService.getUserComics();
+          if (userComicsResult.success) {
+            const userComic = userComicsResult.data.find(
+              (uc) => uc.comics?.comicvine_id === parseInt(comicvineId)
+            );
+            if (userComic) {
+              const dbComicId = userComic.comics.id;
+              const ucId = userComic.id;
+              setDatabaseComicId(dbComicId);
+              setUserComicId(ucId);
+              // Fetch reading progress now that we have the comic_id
+              const progressResult = await collectionService.getReadingProgress(
+                dbComicId
+              );
+              if (progressResult.success) {
+                setReadIssues(progressResult.data.readIssues || []);
+              }
+            }
+          }
+        }
       }
     } catch (error) {
-      console.error('Error checking collection status:', error);
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'reading': return 'bg-status-reading text-white';
-      case 'completed': return 'bg-status-completed text-white';
-      case 'planned': return 'bg-status-planned text-white';
-      case 'dropped': return 'bg-status-dropped text-white';
-      default: return 'bg-muted text-muted-foreground';
+      console.error("Error checking collection status:", error);
     }
   };
 
@@ -114,7 +177,7 @@ const ComicDetails = () => {
         const result = await comicService.getComicDetails(apiUrl);
         if (result.success) {
           setComic(result.data);
-          // Check if comic is in collection
+          // Check if comic is in collection (this will also fetch comic_id if in collection)
           await checkCollectionStatus(result.data.id);
         }
       } catch (error) {
@@ -131,35 +194,7 @@ const ComicDetails = () => {
 
   return (
     <WithFadeIn isLoading={loading}>
-      <div className="flex min-h-screen bg-background">
-        <Sidebar>
-          <SidebarItem
-            icon={<FiSearch size={20} />}
-            text="Search"
-            onClick={() => setSearchOpen(true)}
-          />
-          <hr className="my-3 border-sidebar-border" />
-          <SidebarItem
-            icon={<RxDashboard size={20} />}
-            text="Dashboard"
-            onClick={() => navigate("/")}
-          />
-          <SidebarItem
-            icon={<BiBookmarkAlt size={20} className="py-0" />}
-            text="Comics"
-            onClick={() => navigate("/comics")}
-          />
-          <SidebarItem icon={<MdOutlineForum size={20} />} text="Forum" />
-          <hr className="my-3 border-sidebar-border" />
-          <SidebarItem icon={<Settings size={20} />} text="Settings" />
-          <SidebarItem icon={<LifeBuoy size={20} />} text="Help" />
-        </Sidebar>
-
-        <SearchOverlay
-          isOpen={searchOpen}
-          onClose={() => setSearchOpen(false)}
-          onSearch={handleSearch}
-        />
+      <AppLayout>
         <div className="flex-1 p-4 lg:p-6 xl:p-10 overflow-y-auto">
           <div className="max-w-7xl mx-auto">
             <Button
@@ -174,87 +209,11 @@ const ComicDetails = () => {
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 xl:gap-8">
               {/* Main Content */}
               <div className="xl:col-span-8 space-y-6">
-                <div className="bg-card rounded-xl shadow-sm border border-border p-6 lg:p-8">
-                  <div className="flex flex-col md:flex-row gap-8">
-                    {comic.image && (
-                      <div className="flex-shrink-0 mx-auto md:mx-0">
-                        <img
-                          src={comic.image}
-                          alt={comic.title}
-                          className="w-56 h-auto rounded-lg shadow-lg border border-border/50"
-                        />
-                      </div>
-                    )}
-
-                    <div className="flex-1">
-                      <h1 className="text-3xl md:text-4xl font-bold mb-2 text-card-foreground">
-                        {comic.title}
-                      </h1>
-                      <p className="text-muted-foreground text-lg mb-6">
-                        {comic.publisher}
-                      </p>
-
-                      <div className="flex flex-wrap gap-2 mb-6">
-                        <span className="bg-status-completed/20 text-status-completed px-3 py-1 rounded-full text-sm font-medium border border-status-completed/30">
-                          READ
-                        </span>
-                        <span className="bg-status-reading/20 text-status-reading px-3 py-1 rounded-full text-sm font-medium border border-status-reading/30">
-                          CURRENTLY READING
-                        </span>
-                        <span className="bg-muted text-muted-foreground px-2 py-1 rounded-full text-sm flex items-center">
-                          <Check className="w-3 h-3 mr-1" /> Verified
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-sm">
-                        <StatCard
-                          icon={Calendar}
-                          label="Start"
-                          value={comic.year}
-                        />
-                        <StatCard
-                          icon={Hash}
-                          label="Issues"
-                          value={comic.issueCount || "N/A"}
-                        />
-                        <StatCard
-                          icon={BookOpen}
-                          label="Status"
-                          value={comic.status || "Ongoing"}
-                        />
-                        <StatCard icon={Star} label="Rating" value="4.5/5" />
-                      </div>
-
-                      <div className="mb-6">
-                        <p className="font-medium mb-2 text-card-foreground">
-                          My Rating
-                        </p>
-                        <div className="flex items-center gap-3">
-                          <Rating
-                            initialRating={0}
-                            onRate={(r) => console.log("Rated:", r)}
-                          />
-                          <span className="text-sm text-muted-foreground">
-                            Click to rate
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="">
-                        <p className="font-medium mb-3 text-card-foreground">
-                          Average Rating:{" "}
-                          <span className="text-chart-4 font-bold text-lg">
-                            4.5
-                          </span>
-                          <span className="text-muted-foreground text-sm ml-1">
-                            / 5 (1,234 users)
-                          </span>
-                        </p>
-                        {/* Issue progress bar or similar visualization could go here */}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <ComicHeader
+                  comic={comic}
+                  isInCollection={isInCollection}
+                  collectionStatus={collectionStatus}
+                />
 
                 {/* Details & Tags Section */}
                 <div className="bg-card rounded-xl shadow-sm border border-border p-6 lg:p-8">
@@ -405,6 +364,8 @@ const ComicDetails = () => {
                 <IssuesGrid
                   totalIssues={comic.issueCount || 130}
                   readIssues={readIssues}
+                  onIssueClick={handleIssueClick}
+                  comicId={databaseComicId}
                 />
 
                 {/* Community Reviews - Placeholder for now as we don't have backend for this yet */}
@@ -420,63 +381,11 @@ const ComicDetails = () => {
 
               {/* Actions Sidebar */}
               <div className="xl:col-span-4">
-                <div className="bg-card rounded-xl shadow-sm border border-border p-4 xl:p-6 xl:sticky xl:top-6">
-                  <h3 className="font-bold text-lg mb-4 text-card-foreground">
-                    Actions
-                  </h3>
-                  <div className="space-y-3">
-                    {isInCollection ? (
-                      <>
-                        <Button
-                          className="w-full justify-start text-sm xl:text-base bg-muted/80 hover:bg-muted border-border"
-                          variant="outline"
-                          disabled
-                        >
-                          <Check className="mr-2 h-4 w-4 flex-shrink-0" />
-                          <span className="truncate">In Collection</span>
-                          <span className={`ml-auto px-2 py-0.5 rounded text-xs font-medium capitalize ${getStatusColor(collectionStatus)}`}>
-                            {collectionStatus}
-                          </span>
-                        </Button>
-                        <Button
-                          className="w-full justify-start text-sm xl:text-base"
-                          variant="outline"
-                          onClick={() => handleAddToCollection("reading")}
-                        >
-                          <BookOpen className="mr-2 h-4 w-4 flex-shrink-0" />
-                          <span className="truncate">Mark as Reading</span>
-                        </Button>
-                        <Button
-                          className="w-full justify-start text-sm xl:text-base"
-                          variant="outline"
-                          onClick={() => handleAddToCollection("completed")}
-                        >
-                          <Check className="mr-2 h-4 w-4 flex-shrink-0" />
-                          <span className="truncate">Mark as Completed</span>
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button
-                          className="w-full justify-start text-sm xl:text-base"
-                          variant="outline"
-                          onClick={() => handleAddToCollection("planned")}
-                        >
-                          <Plus className="mr-2 h-4 w-4 flex-shrink-0" />
-                          <span className="truncate">Add to Collection</span>
-                        </Button>
-                        <Button
-                          className="w-full justify-start text-sm xl:text-base"
-                          variant="outline"
-                          onClick={() => handleAddToCollection("completed")}
-                        >
-                          <Check className="mr-2 h-4 w-4 flex-shrink-0" />
-                          <span className="truncate">Mark as Read</span>
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                </div>
+                <ComicActions
+                  isInCollection={isInCollection}
+                  collectionStatus={collectionStatus}
+                  onAddToCollection={handleAddToCollection}
+                />
               </div>
             </div>
           </div>
@@ -488,7 +397,7 @@ const ComicDetails = () => {
           items={viewAllModal.items}
           type={viewAllModal.type}
         />
-      </div>
+      </AppLayout>
     </WithFadeIn>
   );
 };
