@@ -442,6 +442,75 @@ app.get("/api/issues/:comic_id/progress", async (req, res) => {
   }
 });
 
+// Get currently reading comics with progress
+app.get("/api/user/currently-reading", async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+      return res.status(401).json({ error: "No authorization header" });
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(token);
+
+    if (authError || !user) {
+      return res.status(401).json({ error: "Invalid token" });
+    }
+
+    // Get comics with reading status
+    const { data: readingComics, error } = await supabase
+      .from("user_comics")
+      .select(`
+        id,
+        comics (
+          id,
+          comicvine_id,
+          title,
+          publisher,
+          start_year,
+          issue_count,
+          image_url
+        )
+      `)
+      .eq("user_id", user.id)
+      .eq("status", "reading")
+      .order("added_date", { ascending: false });
+
+    if (error) throw error;
+
+    // Get progress for each comic
+    const comicsWithProgress = await Promise.all(
+      readingComics.map(async (userComic) => {
+        const { data: progressData } = await supabase
+          .from("user_issues")
+          .select("issue_number")
+          .eq("user_id", user.id)
+          .eq("comic_id", userComic.comics.id)
+          .eq("is_read", true);
+
+        const readCount = progressData?.length || 0;
+        const totalCount = userComic.comics.issue_count || 0;
+
+        return {
+          ...userComic.comics,
+          readCount,
+          totalCount,
+          progress: totalCount > 0 ? `${readCount}/${totalCount}` : "0/0"
+        };
+      })
+    );
+
+    res.json({ success: true, data: comicsWithProgress });
+  } catch (error) {
+    console.error("Get currently reading error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get("/api/comic-details", async (req, res) => {
   try {
     const { url } = req.query;

@@ -111,6 +111,19 @@ const collectionService = {
       console.error('Remove from collection error:', error);
       return { success: false, error: error.response?.data?.error || error.message };
     }
+  },
+
+  // Get currently reading comics with progress
+  getCurrentlyReading: async () => {
+    try {
+      const headers = await getAuthHeaders();
+      const response = await axios.get(`${BASE_URL}/user/currently-reading`, { headers });
+      
+      return { success: true, data: response.data.data };
+    } catch (error) {
+      console.error('Get currently reading error:', error);
+      return { success: false, error: error.response?.data?.error || error.message };
+    }
   }
 };
 

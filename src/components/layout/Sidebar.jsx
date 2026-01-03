@@ -1,7 +1,7 @@
 import { ChevronFirst, ChevronLast, MoreVerticalIcon } from "lucide-react";
 import logo from "/assets/ComicVault.png";
 import fullLogo from "/assets/ComicVaultLogo.png";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
@@ -18,6 +18,20 @@ const SidebarContext = createContext();
 export default function Sidebar({ children }) {
   const [expanded, setExpanded] = useState(true);
   const { profile, session, signOut } = useAuth();
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setExpanded(false);
+      } else {
+        setExpanded(true);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleLogout = async () => {
     await signOut();

@@ -1,295 +1,432 @@
-# Comic Vault - Development Roadmap & Status
+# Comic Tracker - Development Roadmap & Status
 
 A comprehensive comic book tracking application built with React, Vite, and Supabase.
 
 ## 📈 **Project Summary**
 
-**Comic Vault** is a full-stack web application for managing and tracking comic book collections. The project has made significant progress with core functionality implemented and operational.
+**Comic Tracker** is a full-stack web application for managing and tracking comic book collections. The project has made significant progress with core functionality implemented and operational.
 
-### **Current Status: 70% Complete**
-- ✅ Phase 1: Core Infrastructure (95% Complete)
-- ✅ Phase 2: Collection Management (90% Complete) 
-- 🔄 Phase 3: UX Enhancements (40% Complete)
-- 📋 Phase 4: Social Features (Planned)
-- 📋 Phase 5: Advanced Features (Planned)
+### **What's Working:**
+- ✅ Complete authentication system with Supabase
+- ✅ Comic search and discovery via ComicVine API
+- ✅ Full collection management (add, update status, filter)
+- ✅ Issue-level reading progress tracking
+- ✅ Comprehensive comic details pages
+- ✅ Database schema with RLS security
+- ✅ RESTful API with 8+ endpoints
+
+### **What Needs Work:**
+- 🔄 Issue grid click handlers (UI ready, needs connection)
+- 🔄 Rating system integration (component ready, needs API connection)
+- 🔄 Dashboard real data (currently using mock data)
+- 🔄 Wishlist functionality (schema ready, needs implementation)
+- 🔄 Advanced filtering and sorting
+
+### **Current Phase:** Phase 2-3 (Collection Management & UX Enhancements)
 
 ---
 
-## ✅ **COMPLETED FEATURES**
+## 🚀 Current Status Overview
 
-### **Core Infrastructure**
-- ✅ React 19.1.1 + Vite setup with modern tooling
-- ✅ Tailwind CSS 4.1.13 with custom design system
-- ✅ Express.js backend with ComicVine API proxy
-- ✅ Supabase integration (PostgreSQL + Auth)
-- ✅ Complete database schema with RLS policies
-- ✅ Environment configuration and deployment setup
+### ✅ **COMPLETED FEATURES**
 
-### **Authentication System**
-- ✅ Supabase Auth integration
+#### **Frontend Infrastructure**
+- ✅ React + Vite setup with modern tooling
+- ✅ Tailwind CSS with custom design system
+- ✅ Component library (shadcn/ui integration)
+- ✅ Responsive layout system
+- ✅ Custom theming with CSS variables
+- ✅ React Router for navigation
+
+#### **Authentication System**
+- ✅ Supabase integration
 - ✅ AuthContext with React Context API
-- ✅ Login/Register pages with modern UI
+- ✅ Login/Register pages with UI
 - ✅ Protected routes implementation
-- ✅ Session management and token handling
+- ✅ Session management
+- ✅ Profile fetching from Supabase
 
-### **Comic Discovery & Search**
+#### **Comic Search & Display**
 - ✅ ComicVine API integration via proxy server
-- ✅ Real-time search functionality
+- ✅ Search functionality with real-time results
 - ✅ Comic details page with comprehensive information
 - ✅ Character, Creator, and Location display
-- ✅ Search overlay component with debouncing
 - ✅ Image handling and optimization
+- ✅ Search overlay component
+- ✅ Comic ID encoding/decoding utilities
 
-### **Collection Management**
-- ✅ Complete collection CRUD operations
-- ✅ Add comics to personal collection
-- ✅ Status tracking (Reading, Completed, Planned, Dropped)
-- ✅ Collection filtering by status
-- ✅ MyComics page with collection display
-- ✅ Collection status indicators and badges
-
-### **Backend API (8 Endpoints)**
-- ✅ `GET /api/search` - Comic search
-- ✅ `GET /api/comic-details` - Detailed comic info
-- ✅ `POST /api/comics/add-to-collection` - Add to collection
-- ✅ `GET /api/user/comics` - Get user collection with filtering
-- ✅ `PUT /api/comics/:id/status` - Update status and rating
-- ✅ `GET /api/comics/:comicvine_id/collection-status` - Check collection status
-- ✅ `POST /api/issues/:comic_id/:issue_number/toggle` - Toggle issue read status
-- ✅ `GET /api/issues/:comic_id/progress` - Get reading progress
-
-### **UI Components**
-- ✅ Responsive layout system (AppLayout, Sidebar)
-- ✅ Comic cards with collection actions
+#### **UI Components**
+- ✅ Sidebar navigation
+- ✅ Search overlay
+- ✅ Character/Creator cards
 - ✅ Rating system component (UI ready)
-- ✅ Issues grid with visual progress indicators
-- ✅ Character/Creator cards with modal views
-- ✅ Loading states and empty state components
-- ✅ Modern form components and inputs
+- ✅ Issues grid with sectioned display
+- ✅ View All modal for characters/creators
+- ✅ Loading states and animations
+- ✅ Empty state components
+- ✅ Stat cards and section headers
 
----
+#### **Database Schema**
+- ✅ Complete database schema design
+- ✅ Comics table for ComicVine metadata
+- ✅ User_Comics table for collection tracking
+- ✅ User_Issues table for issue-level progress
+- ✅ User_Wishlist table (schema ready)
+- ✅ Row Level Security (RLS) policies
+- ✅ Database indexes for performance
+- ✅ Triggers for updated_at timestamps
 
-## 🔄 **IN PROGRESS**
+#### **Backend API Endpoints**
+- ✅ Express.js server for ComicVine API proxy
+- ✅ CORS configuration
+- ✅ Search endpoint (`GET /api/search`)
+- ✅ Comic details endpoint (`GET /api/comic-details`)
+- ✅ **Collection Management Endpoints:**
+  - ✅ `POST /api/comics/add-to-collection` - Add/update comic in collection
+  - ✅ `GET /api/user/comics` - Get user's collection with filtering
+  - ✅ `PUT /api/comics/:id/status` - Update comic status and rating
+  - ✅ `GET /api/comics/:comicvine_id/collection-status` - Check if comic is in collection
+- ✅ **Issue Tracking Endpoints:**
+  - ✅ `POST /api/issues/:comic_id/:issue_number/toggle` - Toggle issue read status
+  - ✅ `GET /api/issues/:comic_id/progress` - Get reading progress
+- ✅ Supabase integration with service key
+- ✅ Authentication middleware for protected endpoints
+- ✅ Environment variable configuration
 
-### **Phase 3: UX Enhancements (40% Complete)**
-
-#### **Dashboard Integration**
-- 🔄 Replace mock data with real user collection data
-- 🔄 Currently Reading section with actual user comics
-- 🔄 Reading statistics and progress charts
-- 🔄 Recently added/completed comics display
-
-#### **Interactive Features**
-- 🔄 Issue grid click handlers (UI exists, needs connection)
-- 🔄 Rating system backend integration
-- 🔄 Bulk operations for issue management
-- 🔄 Advanced collection filtering and sorting
+#### **Collection Management Frontend**
+- ✅ MyComics page with collection display
+- ✅ Status-based filtering (all, reading, completed, planned, dropped)
+- ✅ Collection status indicators
+- ✅ Add to collection functionality
+- ✅ Update collection status
+- ✅ Collection service with full API integration
+- ✅ Comic details page with collection actions
+- ✅ Reading progress tracking (backend ready)
 
 ---
 
 ## 📋 **DEVELOPMENT ROADMAP**
 
-### **Phase 3: Enhanced User Experience** (Current Focus)
-**Timeline: 2-3 weeks**
+### **Phase 1: Core Backend Infrastructure** ✅ *COMPLETED*
+**Timeline: Week 1-2**
 
-#### **Immediate Priorities (High)**
-1. **Dashboard Real Data Integration**
-   - Connect CurrentlyReading component to user collection API
-   - Add collection statistics endpoint
-   - Display reading progress and recent activity
-   - Add quick action buttons for common tasks
+#### Database & User Management
+- ✅ **Database Schema Design**
+  - ✅ Comics table for ComicVine metadata
+  - ✅ User_Comics relationship table
+  - ✅ User_Issues tracking table
+  - ✅ User_Wishlist table (schema ready)
+  - ✅ RLS policies and indexes
 
-2. **Issue Grid Interactivity**
-   - Add click handlers to IssuesGrid component
-   - Connect to toggle issue read/unread API
-   - Update UI state after toggling
-   - Add bulk selection for multiple issues
+- [ ] **Enhanced Authentication**
+  - [ ] Password reset functionality
+  - [ ] Email verification
+  - [ ] Profile management endpoints
+  - [ ] User preferences storage
 
-3. **Rating System Connection**
-   - Connect Rating component to backend API
-   - Display user ratings in comic cards and collection
-   - Add rating filters to collection view
-   - Show average ratings where applicable
+#### API Endpoints Development
+```
+✅ Completed Endpoints:
+✅ POST /api/comics/add-to-collection
+✅ GET /api/user/comics
+✅ PUT /api/comics/:id/status
+✅ POST /api/issues/:comic_id/:issue_number/toggle
+✅ GET /api/issues/:comic_id/progress
+✅ GET /api/comics/:comicvine_id/collection-status
 
-#### **Secondary Features (Medium)**
-4. **Wishlist Implementation**
-   - Create wishlist API endpoints
-   - Add "Add to Wishlist" functionality
-   - Create dedicated Wishlist page
-   - Implement move from wishlist to collection
-
-5. **Collection Enhancements**
-   - Add sorting options (date, rating, alphabetical)
-   - Implement advanced search within collection
-   - Add remove from collection functionality
-   - Collection export/import features
+[ ] Remaining:
+[ ] PUT /api/user/profile
+[ ] DELETE /api/comics/:id (remove from collection)
+```
 
 ---
 
-### **Phase 4: Social & Community Features** (Planned)
-**Timeline: 3-4 weeks**
+### **Phase 2: User Collection Management** 🔄 *MOSTLY COMPLETE*
+**Timeline: Week 3-4**
 
-#### **User Profiles & Social**
-- [ ] Public user profiles
-- [ ] Follow system and activity feeds
-- [ ] Collection sharing and discovery
-- [ ] User reviews and recommendations
+#### Backend Features
+- ✅ **Collection Management System**
+  - ✅ Add/update comics in personal collection
+  - ✅ Reading status tracking (Reading, Completed, Planned, Dropped)
+  - ✅ Personal rating system (1-5 stars) - backend ready
+  - [ ] Collection statistics aggregation endpoint
 
-#### **Community Features**
-- [ ] Comic discussion threads
-- [ ] Community ratings and reviews
-- [ ] Reading groups and challenges
-- [ ] User-generated content moderation
+- ✅ **Issue Progress Tracking**
+  - ✅ Individual issue read/unread status
+  - ✅ Reading date tracking
+  - [ ] Bulk operations (mark entire series as read) - partially implemented
+  - [ ] Progress percentage calculation endpoint
+
+#### Frontend Enhancements
+- [ ] **Dashboard Improvements**
+  - [ ] Real user collection data integration (currently using mock data)
+  - [ ] Personal reading statistics
+  - [ ] Recently added/read comics
+  - [ ] Progress charts and visualizations
+
+- ✅ **Collection Management Pages**
+  - ✅ My Comics page with filtering
+  - ✅ Status-based collection views
+  - [ ] Advanced search within collection
+  - [ ] Sorting options (date added, rating, alphabetical)
 
 ---
 
-### **Phase 5: Advanced Features** (Planned)
-**Timeline: 4-5 weeks**
+### **Phase 3: Enhanced User Experience** 🔄 *IN PROGRESS*
+**Timeline: Week 5-6**
 
-#### **Intelligence & Analytics**
-- [ ] Recommendation engine based on reading history
-- [ ] Reading pattern analysis and insights
-- [ ] Genre preference tracking
-- [ ] Reading goal setting and progress tracking
+#### Interactive Features
+- [ ] **Enhanced Issues Grid**
+  - [ ] Click to toggle read/unread status (UI exists, needs click handler)
+  - [ ] Bulk selection for multiple issues
+  - ✅ Visual progress indicators (read/unread colors)
+  - [ ] Reading streak tracking
 
-#### **Performance & Optimization**
-- [ ] Progressive Web App (PWA) features
-- [ ] Offline reading capabilities
-- [ ] Advanced caching strategies
-- [ ] Database query optimization
+- [ ] **Wishlist System**
+  - [ ] Add comics to wishlist (schema ready, needs API & UI)
+  - [ ] Wishlist management page
+  - [ ] Move from wishlist to collection
+  - [ ] Wishlist sharing
+
+#### Advanced UI Components
+- [ ] **Filtering & Search**
+  - [ ] Advanced filters (publisher, year, status, rating)
+  - ✅ Real-time search with debouncing (search overlay implemented)
+  - [ ] Saved search preferences
+  - [ ] Quick filter buttons
+
+#### Rating System
+- ✅ Rating component UI
+- [ ] Connect rating to backend API
+- [ ] Display user ratings in collection
+- [ ] Average rating calculation
+
+---
+
+### **Phase 4: Social & Community Features** 🔄 *PLANNED*
+**Timeline: Week 7-8**
+
+#### Community System
+- [ ] **Reviews & Ratings**
+  - [ ] User review system
+  - [ ] Community rating aggregation
+  - [ ] Review moderation system
+  - [ ] Helpful/unhelpful voting
+
+- [ ] **Social Features**
+  - [ ] User profiles (public/private)
+  - [ ] Follow system
+  - [ ] Activity feeds
+  - [ ] Collection sharing
+
+#### Forum Integration
+- [ ] **Discussion System**
+  - [ ] Comic-specific discussion threads
+  - [ ] General forum categories
+  - [ ] User interaction system
+  - [ ] Moderation tools
+
+---
+
+### **Phase 5: Advanced Features** 🔄 *PLANNED*
+**Timeline: Week 9-10**
+
+#### Intelligence & Recommendations
+- [ ] **Recommendation Engine**
+  - [ ] Reading history-based suggestions
+  - [ ] Similar users' preferences
+  - [ ] Publisher/genre recommendations
+  - [ ] Trending comics detection
+
+#### Analytics & Insights
+- [ ] **Personal Analytics**
+  - [ ] Reading pattern analysis
+  - [ ] Genre preference tracking
+  - [ ] Reading goal setting and tracking
+  - [ ] Monthly/yearly reading reports
+
+---
+
+### **Phase 6: Polish & Optimization** 🔄 *PLANNED*
+**Timeline: Week 11-12**
+
+#### Performance Optimization
+- [ ] **Frontend Performance**
+  - [ ] Lazy loading for large collections
+  - [ ] Image optimization and caching
+  - [ ] Bundle size optimization
+  - [ ] Progressive Web App features
+
+- [ ] **Backend Optimization**
+  - [ ] Database query optimization
+  - [ ] API response caching
+  - [ ] Rate limiting implementation
+  - [ ] Error handling improvements
+
+#### Additional Features
+- [ ] **Data Management**
+  - [ ] Export collection data
+  - [ ] Import from other platforms
+  - [ ] Automated backups
+  - [ ] Data synchronization
 
 ---
 
 ## 🛠 **TECHNOLOGY STACK**
 
-### **Frontend (Implemented)**
-- React 19.1.1 with modern hooks and patterns
-- Vite for fast development and building
-- Tailwind CSS 4.1.13 with custom design tokens
-- Radix UI for accessible component primitives
-- React Router DOM for client-side routing
-- Axios for HTTP requests with interceptors
+### **Frontend** ✅ *IMPLEMENTED*
+- **Framework**: React 19.1.1 with Vite
+- **Styling**: Tailwind CSS 4.1.13 with custom design system
+- **UI Components**: shadcn/ui with Radix UI primitives
+- **Routing**: React Router DOM 7.9.1
+- **Icons**: Lucide React + React Icons
+- **HTTP Client**: Axios
 
-### **Backend (Implemented)**
-- Node.js with Express.js framework
-- Supabase for database and authentication
-- ComicVine API integration with proxy server
-- CORS and security middleware
-- Environment-based configuration
+### **Backend** ✅ *BASIC IMPLEMENTATION*
+- **Runtime**: Node.js with Express.js
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **API Proxy**: Express server for ComicVine API
+- **Environment**: dotenv for configuration
 
-### **Database (Complete)**
-- PostgreSQL via Supabase
-- Row Level Security (RLS) policies
-- Optimized indexes for performance
-- Comprehensive schema with relationships
+### **External APIs** ✅ *INTEGRATED*
+- **ComicVine API**: Comic data and metadata
+- **Supabase**: Authentication and database
 
 ---
 
-## 🎯 **IMMEDIATE NEXT STEPS**
+## 🚦 **GETTING STARTED**
 
-### **Week 1-2: Dashboard & Interactivity**
-1. **Dashboard Real Data** (Priority: Critical)
-   - Replace mock CurrentlyReading with API calls
-   - Add user collection statistics
-   - Implement reading progress tracking
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- Supabase account
+- ComicVine API key
 
-2. **Issue Grid Functionality** (Priority: High)
-   - Add click handlers to toggle issue status
-   - Update UI state after API calls
-   - Add visual feedback for user actions
+### Installation
 
-### **Week 3-4: Rating & Wishlist**
-3. **Rating System Integration** (Priority: High)
-   - Connect rating component to backend
-   - Display ratings in collection views
-   - Add rating-based filtering
+1. **Clone the repository**
+```bash
+git clone <repository-url>
+cd comic-tracker
+```
 
-4. **Wishlist Feature** (Priority: Medium)
-   - Implement wishlist API endpoints
-   - Create wishlist management UI
-   - Add wishlist to collection workflow
+2. **Install frontend dependencies**
+```bash
+npm install
+```
+
+3. **Install backend dependencies**
+```bash
+cd backend
+npm install
+```
+
+4. **Environment Setup**
+
+Frontend `.env`:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+Backend `.env`:
+```env
+COMICVINE_API_KEY=your_comicvine_api_key
+```
+
+5. **Start Development Servers**
+
+Backend:
+```bash
+cd backend
+npm run dev
+```
+
+Frontend:
+```bash
+npm run dev
+```
 
 ---
 
 ## 📊 **PROJECT METRICS**
 
-### **Code Quality**
-- **Frontend**: 25+ React components with modern patterns
-- **Backend**: 8 RESTful API endpoints with authentication
-- **Database**: 4 main tables with proper relationships
-- **UI/UX**: Responsive design with accessibility focus
+### **Completion Status**
+- **Phase 1**: 95% Complete ✅ (Database schema, core API endpoints done)
+- **Phase 2**: 85% Complete 🔄 (Collection management mostly done, dashboard needs real data)
+- **Phase 3**: 30% Complete 🔄 (Issues grid UI done, needs click handlers; wishlist pending)
+- **Phase 4**: 0% Complete (Social Features)
+- **Phase 5**: 0% Complete (Advanced Features)
+- **Phase 6**: 0% Complete (Optimization)
 
-### **Feature Completion**
-- **Authentication**: 100% Complete
-- **Comic Search**: 100% Complete
-- **Collection Management**: 90% Complete
-- **Issue Tracking**: 80% Complete (backend ready, UI pending)
-- **Dashboard**: 30% Complete (needs real data)
-- **Social Features**: 0% Complete
-
-### **Technical Debt**
-- Minimal technical debt due to modern architecture
-- Well-structured codebase with separation of concerns
-- Comprehensive error handling and loading states
-- Security best practices implemented
+### **Overall Progress**: ~45% Complete
 
 ---
 
-## 🚀 **DEPLOYMENT STATUS**
+## 🎯 **IMMEDIATE NEXT STEPS**
 
-### **Development Environment**
-- ✅ Local development setup documented
-- ✅ Environment variables configured
-- ✅ Database schema and migrations ready
-- ✅ API testing suite available
+1. **Complete Issue Grid Interactivity** (Priority: High)
+   - Add click handlers to IssuesGrid component
+   - Connect issue clicks to toggle API endpoint
+   - Update UI state after toggling
 
-### **Production Readiness**
-- 🔄 Production deployment configuration
-- 🔄 Environment-specific optimizations
-- 🔄 Performance monitoring setup
-- 🔄 Error tracking and logging
+2. **Connect Rating System** (Priority: High)
+   - Connect Rating component to update API
+   - Display user ratings in comic cards
+   - Show ratings in collection views
+
+3. **Dashboard Real Data Integration** (Priority: High)
+   - Replace mock "Currently Reading" data with real API calls
+   - Fetch user's reading statistics
+   - Display recently added/read comics
+   - Add collection statistics cards
+
+4. **Wishlist Implementation** (Priority: Medium)
+   - Create wishlist API endpoints
+   - Add "Add to Wishlist" button in ComicDetails
+   - Create Wishlist page
+   - Implement move from wishlist to collection
+
+5. **Collection Enhancements** (Priority: Medium)
+   - Add sorting options (date, rating, alphabetical)
+   - Implement advanced search within collection
+   - Add remove from collection functionality
+   - Collection statistics endpoint
 
 ---
 
 ## 🤝 **CONTRIBUTING**
 
-### **Development Workflow**
-1. Feature planning and design
-2. Backend API implementation
-3. Frontend component development
-4. Integration testing
-5. UI/UX refinement
+This is a personal project roadmap. The development follows the phases outlined above, with each phase building upon the previous one.
 
-### **Code Standards**
-- Modern React patterns with hooks
-- TypeScript-ready codebase structure
-- Consistent naming conventions
-- Comprehensive error handling
+### **Development Workflow**
+1. Complete backend infrastructure for each phase
+2. Implement corresponding frontend features
+3. Test integration and user experience
+4. Optimize and refine before moving to next phase
 
 ---
 
 ## 📝 **NOTES**
 
-### **Key Achievements**
-- Fully functional collection management system
-- Comprehensive comic search and discovery
-- Secure authentication with protected routes
-- Modern, responsive UI with excellent UX
-- Scalable database architecture
-
-### **Current Focus Areas**
-- Dashboard real data integration
-- Interactive issue tracking
-- Rating system completion
-- Wishlist functionality
-
-### **Architecture Decisions**
-- Proxy server for ComicVine API to handle CORS and rate limiting
-- Supabase for rapid development with enterprise-grade features
-- Component-based architecture for maintainability
-- Service layer pattern for API interactions
+- **Current Focus**: Completing Phase 2 and Phase 3 enhancements
+- **Architecture**: Following modern React patterns with clean separation of concerns
+- **Database**: Complete schema implemented with RLS policies
+- **API Strategy**: Using proxy server to handle ComicVine API limitations
+- **UI/UX**: Implementing responsive design with accessibility in mind
+- **Key Achievements**: 
+  - Full collection management system operational
+  - Issue tracking backend complete
+  - Comprehensive comic details page
+  - Search and discovery working
+- **Remaining Work**: 
+  - Connect UI interactions (issue clicks, ratings)
+  - Dashboard real data integration
+  - Wishlist functionality
+  - Enhanced filtering and sorting
 
 ---
 
 *Last Updated: January 2025*
-*Next Review: Weekly during active development*
+*Next Review: Ongoing*
