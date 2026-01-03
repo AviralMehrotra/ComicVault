@@ -122,3 +122,56 @@ CREATE POLICY "Users can delete from their own wishlist" ON user_wishlist
     FOR DELETE USING (auth.uid() = user_id);
 
 -- Comics table is public read (no RLS needed for basic comic info)
+ALTER TABLE comics ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Comics are viewable by everyone" ON comics
+    FOR SELECT USING (true);
+
+-- 9. Profiles table (for user avatars and details)
+CREATE TABLE IF NOT EXISTS profiles (
+  id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+  username TEXT UNIQUE,
+  full_name TEXT,
+  avatar_url TEXT,
+  website TEXT,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 10. Profiles RLS
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public profiles are viewable by everyone" ON profiles
+    FOR SELECT USING (true);
+
+CREATE POLICY "Users can insert their own profile" ON profiles
+    FOR INSERT WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile" ON profiles
+    FOR UPDATE USING (auth.uid() = id);
+
+-- 11. Trigger to create profile on signup
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, username, full_name, avatar_url)
+  VALUES (
+    NEW.id,
+    NEW.raw_user_meta_data->>'username',
+    NEW.raw_user_meta_data->>'full_name',
+    NEW.raw_user_meta_data->>'avatar_url'
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Drop trigger if exists to avoid errors on re-run
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+-- 12. Storage Bucket Setup (Run this in Supabase SQL Editor if not using UI)
+-- insert into storage.buckets (id, name) values ('avatars', 'avatars');
+-- create policy "Avatar images are publicly accessible." on storage.objects for select using ( bucket_id = 'avatars' );
+-- create policy "Anyone can upload an avatar." on storage.objects for insert with check ( bucket_id = 'avatars' );
+-- create policy "Anyone can update an avatar." on storage.objects for update with check ( bucket_id = 'avatars' );

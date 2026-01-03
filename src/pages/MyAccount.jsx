@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import supabase from "@/utils/supabase";
 import {
   Settings,
   User,
@@ -6,6 +6,7 @@ import {
   Library,
   Clock,
   CheckCircle,
+  Camera,
 } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import { useAuth } from "@/context/AuthContext";
@@ -16,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import StatCard from "@/components/ui/StatCard";
 import Loader from "@/components/elements/Loader";
 import { useTitle } from "@/hooks/useTitle";
+import { useEffect, useState } from "react";
 
 const MyAccount = () => {
   useTitle("My Account");
@@ -28,6 +30,51 @@ const MyAccount = () => {
   });
   const [activityDates, setActivityDates] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+
+  const uploadAvatar = async (event) => {
+    try {
+      setUploading(true);
+
+      if (!event.target.files || event.target.files.length === 0) {
+        throw new Error("You must select an image to upload.");
+      }
+
+      const file = event.target.files[0];
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${profile.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("avatars").getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ avatar_url: publicUrl })
+        .eq("id", profile.id);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      // Reload to show new avatar
+      window.location.reload();
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      alert("Error uploading avatar!");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,12 +115,28 @@ const MyAccount = () => {
           {/* Header Section */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 bg-card p-6 rounded-xl border border-border shadow-sm">
             <div className="flex items-center gap-6">
-              <Avatar className="w-24 h-24 border-4 border-background shadow-md">
-                <AvatarImage src={profile?.avatar_url} />
-                <AvatarFallback className="text-2xl bg-primary/10 text-primary">
-                  {profile?.username?.charAt(0).toUpperCase() || "U"}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative group">
+                <Avatar className="w-24 h-24 border-4 border-background shadow-md">
+                  <AvatarImage src={profile?.avatar_url} />
+                  <AvatarFallback className="text-2xl bg-primary/10 text-primary">
+                    {profile?.username?.charAt(0).toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <label
+                  htmlFor="avatar-upload"
+                  className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                >
+                  <Camera className="w-8 h-8 text-white" />
+                </label>
+                <input
+                  type="file"
+                  id="avatar-upload"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={uploadAvatar}
+                  disabled={uploading}
+                />
+              </div>
               <div>
                 <h1 className="text-2xl font-bold text-card-foreground">
                   {profile?.username || "User"}
