@@ -3,6 +3,7 @@ import cors from "cors";
 import axios from "axios";
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
+import './healthCheck.js'; // Start health check cron job
 
 dotenv.config();
 
@@ -32,6 +33,15 @@ app.use(express.json());
 // Health check endpoint for Render
 app.get("/", (req, res) => {
   res.json({ message: "Comic Vault API is running!", status: "healthy" });
+});
+
+// Dedicated health endpoint for monitoring
+app.get("/health", (req, res) => {
+  res.status(200).json({ 
+    status: "healthy", 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });
 
 // Test endpoint to verify Supabase connection

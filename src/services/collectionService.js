@@ -18,7 +18,10 @@ const collectionService = {
       const response = await axios.post(`${BASE_URL}/comics/add-to-collection`, {
         comic,
         status
-      }, { headers });
+      }, { 
+        headers,
+        timeout: 30000 // 30 second timeout
+      });
       
       return { success: true, data: response.data };
     } catch (error) {
@@ -35,7 +38,8 @@ const collectionService = {
       
       const response = await axios.get(`${BASE_URL}/user/comics`, {
         headers,
-        params
+        params,
+        timeout: 30000 // 30 second timeout
       });
       
       return { success: true, data: response.data.data };
