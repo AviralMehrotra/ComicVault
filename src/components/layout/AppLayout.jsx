@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LifeBuoy, Settings } from "lucide-react";
+import { LifeBuoy, Settings, User } from "lucide-react";
 import Sidebar, { SidebarItem } from "./Sidebar";
 import SearchOverlay from "./SearchOverlay";
 import { RxDashboard } from "react-icons/rx";
@@ -26,6 +26,7 @@ const AppLayout = ({ children, activeRoute = "dashboard" }) => {
   const getActiveRoute = () => {
     if (location.pathname === "/") return "dashboard";
     if (location.pathname === "/comics") return "comics";
+    if (location.pathname === "/account") return "account";
     return activeRoute;
   };
 
@@ -54,6 +55,12 @@ const AppLayout = ({ children, activeRoute = "dashboard" }) => {
         />
         <SidebarItem icon={<MdOutlineForum size={20} />} text="Forum" />
         <hr className="my-3 border-sidebar-border" />
+        <SidebarItem
+          icon={<User size={20} />}
+          text="My Account"
+          active={currentRoute === "account"}
+          onClick={() => navigate("/account")}
+        />
         <SidebarItem icon={<Settings size={20} />} text="Settings" />
         <SidebarItem icon={<LifeBuoy size={20} />} text="Help" />
       </Sidebar>
@@ -70,4 +77,3 @@ const AppLayout = ({ children, activeRoute = "dashboard" }) => {
 };
 
 export default AppLayout;
-

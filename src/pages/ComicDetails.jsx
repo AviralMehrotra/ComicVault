@@ -68,6 +68,18 @@ const ComicDetails = () => {
       if (result.success) {
         // Refresh reading progress after toggling
         await fetchReadingProgress();
+
+        // Auto-switch to "reading" if currently "planned"
+        // And force update timestamp for activity feed
+        if (userComicId) {
+          let newStatus = collectionStatus;
+          if (collectionStatus === "planned") {
+            newStatus = "reading";
+            setCollectionStatus("reading");
+          }
+
+          await collectionService.updateComicStatus(userComicId, newStatus);
+        }
       } else {
         console.error("Error toggling issue:", result.error);
       }

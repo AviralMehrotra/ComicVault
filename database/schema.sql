@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS user_comics (
   completed_date TIMESTAMP WITH TIME ZONE,
   notes TEXT,
   is_favorite BOOLEAN DEFAULT FALSE,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(user_id, comic_id)
 );
 

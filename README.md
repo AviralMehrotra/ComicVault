@@ -1,8 +1,9 @@
-# Comic Vault
+<h1>
+  <img src="./public/assets/ComicVault.png" width="32" style="vertical-align: middle;" />
+  <span style="vertical-align: middle;">Comic Vault</span>
+</h1>
 
 A modern, full-stack comic book collection tracker built with React, Node.js, and Supabase. Discover, track, and manage your comic book reading journey with an intuitive interface and powerful features.
-
-![Comic Vault](./public/assets/ComicVault.png)
 
 ## ✨ Features
 

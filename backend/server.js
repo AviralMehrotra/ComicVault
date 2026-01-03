@@ -22,12 +22,17 @@ app.use(express.json());
 // Test endpoint to verify Supabase connection
 app.get("/api/test", async (req, res) => {
   try {
-    const { data, error } = await supabase.from('comics').select('count').limit(1);
+    const { data, error } = await supabase
+      .from("comics")
+      .select("count")
+      .limit(1);
     if (error) throw error;
-    res.json({ success: true, message: 'Supabase connected successfully' });
+    res.json({ success: true, message: "Supabase connected successfully" });
   } catch (error) {
-    console.error('Supabase test error:', error);
-    res.status(500).json({ error: 'Supabase connection failed: ' + error.message });
+    console.error("Supabase test error:", error);
+    res
+      .status(500)
+      .json({ error: "Supabase connection failed: " + error.message });
   }
 });
 
@@ -58,8 +63,8 @@ app.get("/api/search", async (req, res) => {
 // Helper function to get or create comic in database
 const getOrCreateComic = async (comicData) => {
   try {
-    console.log('Processing comic data:', JSON.stringify(comicData, null, 2));
-    
+    console.log("Processing comic data:", JSON.stringify(comicData, null, 2));
+
     const { data: existingComic } = await supabase
       .from("comics")
       .select("id")
@@ -67,7 +72,7 @@ const getOrCreateComic = async (comicData) => {
       .single();
 
     if (existingComic) {
-      console.log('Found existing comic:', existingComic.id);
+      console.log("Found existing comic:", existingComic.id);
       return existingComic.id;
     }
 
@@ -79,10 +84,13 @@ const getOrCreateComic = async (comicData) => {
       issue_count: comicData.count_of_issues || comicData.issueCount,
       description: comicData.description || comicData.deck,
       image_url: comicData.image?.medium_url || comicData.image,
-      api_detail_url: comicData.api_detail_url
+      api_detail_url: comicData.api_detail_url,
     };
-    
-    console.log('Inserting new comic:', JSON.stringify(comicInsertData, null, 2));
+
+    console.log(
+      "Inserting new comic:",
+      JSON.stringify(comicInsertData, null, 2)
+    );
 
     const { data: newComic, error } = await supabase
       .from("comics")
@@ -91,14 +99,14 @@ const getOrCreateComic = async (comicData) => {
       .single();
 
     if (error) {
-      console.error('Database insert error:', error);
+      console.error("Database insert error:", error);
       throw error;
     }
-    
-    console.log('Created new comic:', newComic.id);
+
+    console.log("Created new comic:", newComic.id);
     return newComic.id;
   } catch (error) {
-    console.error('getOrCreateComic error:', error);
+    console.error("getOrCreateComic error:", error);
     throw error;
   }
 };
@@ -106,32 +114,32 @@ const getOrCreateComic = async (comicData) => {
 // Add comic to user's collection
 app.post("/api/comics/add-to-collection", async (req, res) => {
   try {
-    console.log('Add to collection request:', req.body);
+    console.log("Add to collection request:", req.body);
     const { comic, status = "planned" } = req.body;
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-      console.log('No authorization header');
+      console.log("No authorization header");
       return res.status(401).json({ error: "No authorization header" });
     }
 
     const token = authHeader.replace("Bearer ", "");
-    console.log('Token received:', token.substring(0, 20) + '...');
-    
+    console.log("Token received:", token.substring(0, 20) + "...");
+
     const {
       data: { user },
       error: authError,
     } = await supabase.auth.getUser(token);
 
     if (authError || !user) {
-      console.log('Auth error:', authError);
+      console.log("Auth error:", authError);
       return res.status(401).json({ error: "Invalid token" });
     }
-    
-    console.log('User authenticated:', user.id);
+
+    console.log("User authenticated:", user.id);
 
     const comicId = await getOrCreateComic(comic);
-    console.log('Comic ID obtained:', comicId);
+    console.log("Comic ID obtained:", comicId);
 
     // Check if comic already exists in user's collection
     const { data: existingUserComic } = await supabase
@@ -150,13 +158,13 @@ app.post("/api/comics/add-to-collection", async (req, res) => {
         .eq("id", existingUserComic.id)
         .select()
         .single();
-      
+
       if (error) {
-        console.error('User comics update error:', error);
+        console.error("User comics update error:", error);
         throw error;
       }
       result = data;
-      console.log('Updated existing collection entry:', data);
+      console.log("Updated existing collection entry:", data);
     } else {
       // Insert new entry
       const { data, error } = await supabase
@@ -171,14 +179,14 @@ app.post("/api/comics/add-to-collection", async (req, res) => {
         .single();
 
       if (error) {
-        console.error('User comics insert error:', error);
+        console.error("User comics insert error:", error);
         throw error;
       }
       result = data;
-      console.log('Created new collection entry:', data);
+      console.log("Created new collection entry:", data);
     }
-    
-    console.log('Successfully processed collection:', result);
+
+    console.log("Successfully processed collection:", result);
     res.json({ success: true, data: result });
   } catch (error) {
     console.error("Add to collection error:", error);
@@ -208,25 +216,28 @@ app.get("/api/comics/:comicvine_id/collection-status", async (req, res) => {
 
     const { data, error } = await supabase
       .from("user_comics")
-      .select(`
+      .select(
+        `
         id, 
         status, 
         personal_rating,
         comics!inner(comicvine_id)
-      `)
+      `
+      )
       .eq("user_id", user.id)
       .eq("comics.comicvine_id", comicvine_id)
       .single();
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+    if (error && error.code !== "PGRST116") {
+      // PGRST116 = no rows returned
       throw error;
     }
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       inCollection: !!data,
       status: data?.status || null,
-      rating: data?.personal_rating || null
+      rating: data?.personal_rating || null,
     });
   } catch (error) {
     console.error("Check collection status error:", error);
@@ -279,7 +290,30 @@ app.get("/api/user/comics", async (req, res) => {
     });
 
     if (error) throw error;
-    res.json({ success: true, data });
+
+    // Fetch all read issues for this user to calculate progress efficiently
+    const { data: readIssues, error: issuesError } = await supabase
+      .from("user_issues")
+      .select("comic_id")
+      .eq("user_id", user.id)
+      .eq("is_read", true);
+
+    if (issuesError) throw issuesError;
+
+    // Create a map of comic_id -> count
+    const readCounts = {};
+    readIssues.forEach((issue) => {
+      readCounts[issue.comic_id] = (readCounts[issue.comic_id] || 0) + 1;
+    });
+
+    // Enrich data with progress
+    const enrichedData = data.map((item) => ({
+      ...item,
+      issues_read: readCounts[item.comics.id] || 0,
+      total_issues: item.comics.issue_count || 0,
+    }));
+
+    res.json({ success: true, data: enrichedData });
   } catch (error) {
     console.error("Get user comics error:", error);
     res.status(500).json({ error: error.message });
@@ -307,7 +341,7 @@ app.put("/api/comics/:id/status", async (req, res) => {
       return res.status(401).json({ error: "Invalid token" });
     }
 
-    const updateData = { status };
+    const updateData = { status, updated_at: new Date().toISOString() };
     if (rating) updateData.personal_rating = rating;
     if (status === "reading" && !updateData.started_reading_date) {
       updateData.started_reading_date = new Date().toISOString();
@@ -394,6 +428,13 @@ app.post("/api/issues/:comic_id/:issue_number/toggle", async (req, res) => {
       result = data;
     }
 
+    // Update parent user_comics updated_at
+    await supabase
+      .from("user_comics")
+      .update({ updated_at: new Date().toISOString() })
+      .eq("user_id", user.id)
+      .eq("comic_id", comic_id);
+
     res.json({ success: true, data: result });
   } catch (error) {
     console.error("Toggle issue error:", error);
@@ -464,7 +505,8 @@ app.get("/api/user/currently-reading", async (req, res) => {
     // Get comics with reading status
     const { data: readingComics, error } = await supabase
       .from("user_comics")
-      .select(`
+      .select(
+        `
         id,
         comics (
           id,
@@ -475,7 +517,8 @@ app.get("/api/user/currently-reading", async (req, res) => {
           issue_count,
           image_url
         )
-      `)
+      `
+      )
       .eq("user_id", user.id)
       .eq("status", "reading")
       .order("added_date", { ascending: false });
@@ -499,7 +542,7 @@ app.get("/api/user/currently-reading", async (req, res) => {
           ...userComic.comics,
           readCount,
           totalCount,
-          progress: totalCount > 0 ? `${readCount}/${totalCount}` : "0/0"
+          progress: totalCount > 0 ? `${readCount}/${totalCount}` : "0/0",
         };
       })
     );
