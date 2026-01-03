@@ -7,22 +7,26 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 **Comic Tracker** is a full-stack web application for managing and tracking comic book collections. The project has made significant progress with core functionality implemented and operational.
 
 ### **What's Working:**
+
 - ✅ Complete authentication system with Supabase
 - ✅ Comic search and discovery via ComicVine API
 - ✅ Full collection management (add, update status, filter)
 - ✅ Issue-level reading progress tracking
 - ✅ Comprehensive comic details pages
+- ✅ **Dashboard with Real-Time Activity Feed**
+- ✅ **My Account Page with Reading Heatmap**
+- ✅ **Interactive Issue Grid (Mark as Read/Unread)**
 - ✅ Database schema with RLS security
-- ✅ RESTful API with 8+ endpoints
+- ✅ RESTful API with 10+ endpoints
 
 ### **What Needs Work:**
-- 🔄 Issue grid click handlers (UI ready, needs connection)
+
 - 🔄 Rating system integration (component ready, needs API connection)
-- 🔄 Dashboard real data (currently using mock data)
 - 🔄 Wishlist functionality (schema ready, needs implementation)
 - 🔄 Advanced filtering and sorting
+- 🔄 Social features (Friends, Public Profiles)
 
-### **Current Phase:** Phase 2-3 (Collection Management & UX Enhancements)
+### **Current Phase:** Phase 3-4 (UX Enhancements & Social Features)
 
 ---
 
@@ -31,6 +35,7 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 ### ✅ **COMPLETED FEATURES**
 
 #### **Frontend Infrastructure**
+
 - ✅ React + Vite setup with modern tooling
 - ✅ Tailwind CSS with custom design system
 - ✅ Component library (shadcn/ui integration)
@@ -39,6 +44,7 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 - ✅ React Router for navigation
 
 #### **Authentication System**
+
 - ✅ Supabase integration
 - ✅ AuthContext with React Context API
 - ✅ Login/Register pages with UI
@@ -47,6 +53,7 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 - ✅ Profile fetching from Supabase
 
 #### **Comic Search & Display**
+
 - ✅ ComicVine API integration via proxy server
 - ✅ Search functionality with real-time results
 - ✅ Comic details page with comprehensive information
@@ -56,6 +63,7 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 - ✅ Comic ID encoding/decoding utilities
 
 #### **UI Components**
+
 - ✅ Sidebar navigation
 - ✅ Search overlay
 - ✅ Character/Creator cards
@@ -65,8 +73,11 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 - ✅ Loading states and animations
 - ✅ Empty state components
 - ✅ Stat cards and section headers
+- ✅ **Activity Feed Component**
+- ✅ **GitHub-style Contribution Graph**
 
 #### **Database Schema**
+
 - ✅ Complete database schema design
 - ✅ Comics table for ComicVine metadata
 - ✅ User_Comics table for collection tracking
@@ -77,6 +88,7 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 - ✅ Triggers for updated_at timestamps
 
 #### **Backend API Endpoints**
+
 - ✅ Express.js server for ComicVine API proxy
 - ✅ CORS configuration
 - ✅ Search endpoint (`GET /api/search`)
@@ -89,11 +101,14 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 - ✅ **Issue Tracking Endpoints:**
   - ✅ `POST /api/issues/:comic_id/:issue_number/toggle` - Toggle issue read status
   - ✅ `GET /api/issues/:comic_id/progress` - Get reading progress
+- ✅ **User Activity Endpoints:**
+  - ✅ `GET /api/user/currently-reading` - Get active reads with progress
 - ✅ Supabase integration with service key
 - ✅ Authentication middleware for protected endpoints
 - ✅ Environment variable configuration
 
 #### **Collection Management Frontend**
+
 - ✅ MyComics page with collection display
 - ✅ Status-based filtering (all, reading, completed, planned, dropped)
 - ✅ Collection status indicators
@@ -102,16 +117,20 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 - ✅ Collection service with full API integration
 - ✅ Comic details page with collection actions
 - ✅ Reading progress tracking (backend ready)
+- ✅ **Interactive Issue Grid**
 
 ---
 
 ## 📋 **DEVELOPMENT ROADMAP**
 
-### **Phase 1: Core Backend Infrastructure** ✅ *COMPLETED*
+### **Phase 1: Core Backend Infrastructure** ✅ _COMPLETED_
+
 **Timeline: Week 1-2**
 
 #### Database & User Management
+
 - ✅ **Database Schema Design**
+
   - ✅ Comics table for ComicVine metadata
   - ✅ User_Comics relationship table
   - ✅ User_Issues tracking table
@@ -125,6 +144,7 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
   - [ ] User preferences storage
 
 #### API Endpoints Development
+
 ```
 ✅ Completed Endpoints:
 ✅ POST /api/comics/add-to-collection
@@ -133,6 +153,7 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 ✅ POST /api/issues/:comic_id/:issue_number/toggle
 ✅ GET /api/issues/:comic_id/progress
 ✅ GET /api/comics/:comicvine_id/collection-status
+✅ GET /api/user/currently-reading
 
 [ ] Remaining:
 [ ] PUT /api/user/profile
@@ -141,11 +162,14 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 
 ---
 
-### **Phase 2: User Collection Management** 🔄 *MOSTLY COMPLETE*
+### **Phase 2: User Collection Management** ✅ _COMPLETED_
+
 **Timeline: Week 3-4**
 
 #### Backend Features
+
 - ✅ **Collection Management System**
+
   - ✅ Add/update comics in personal collection
   - ✅ Reading status tracking (Reading, Completed, Planned, Dropped)
   - ✅ Personal rating system (1-5 stars) - backend ready
@@ -154,15 +178,18 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 - ✅ **Issue Progress Tracking**
   - ✅ Individual issue read/unread status
   - ✅ Reading date tracking
-  - [ ] Bulk operations (mark entire series as read) - partially implemented
-  - [ ] Progress percentage calculation endpoint
+  - ✅ Progress percentage calculation
+  - [ ] Bulk operations (mark entire series as read)
 
 #### Frontend Enhancements
-- [ ] **Dashboard Improvements**
-  - [ ] Real user collection data integration (currently using mock data)
-  - [ ] Personal reading statistics
-  - [ ] Recently added/read comics
-  - [ ] Progress charts and visualizations
+
+- ✅ **Dashboard Improvements**
+
+  - ✅ Real user collection data integration
+  - ✅ Personal reading statistics
+  - ✅ Recently added/read comics
+  - ✅ Activity Feed
+  - ✅ Reading Heatmap
 
 - ✅ **Collection Management Pages**
   - ✅ My Comics page with filtering
@@ -172,14 +199,17 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 
 ---
 
-### **Phase 3: Enhanced User Experience** 🔄 *IN PROGRESS*
+### **Phase 3: Enhanced User Experience** 🔄 _IN PROGRESS_
+
 **Timeline: Week 5-6**
 
 #### Interactive Features
-- [ ] **Enhanced Issues Grid**
-  - [ ] Click to toggle read/unread status (UI exists, needs click handler)
-  - [ ] Bulk selection for multiple issues
+
+- ✅ **Enhanced Issues Grid**
+
+  - ✅ Click to toggle read/unread status
   - ✅ Visual progress indicators (read/unread colors)
+  - [ ] Bulk selection for multiple issues
   - [ ] Reading streak tracking
 
 - [ ] **Wishlist System**
@@ -189,6 +219,7 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
   - [ ] Wishlist sharing
 
 #### Advanced UI Components
+
 - [ ] **Filtering & Search**
   - [ ] Advanced filters (publisher, year, status, rating)
   - ✅ Real-time search with debouncing (search overlay implemented)
@@ -196,6 +227,7 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
   - [ ] Quick filter buttons
 
 #### Rating System
+
 - ✅ Rating component UI
 - [ ] Connect rating to backend API
 - [ ] Display user ratings in collection
@@ -203,11 +235,14 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 
 ---
 
-### **Phase 4: Social & Community Features** 🔄 *PLANNED*
+### **Phase 4: Social & Community Features** 🔄 _PLANNED_
+
 **Timeline: Week 7-8**
 
 #### Community System
+
 - [ ] **Reviews & Ratings**
+
   - [ ] User review system
   - [ ] Community rating aggregation
   - [ ] Review moderation system
@@ -216,10 +251,11 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 - [ ] **Social Features**
   - [ ] User profiles (public/private)
   - [ ] Follow system
-  - [ ] Activity feeds
+  - [ ] Activity feeds (Friends view)
   - [ ] Collection sharing
 
 #### Forum Integration
+
 - [ ] **Discussion System**
   - [ ] Comic-specific discussion threads
   - [ ] General forum categories
@@ -228,10 +264,12 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 
 ---
 
-### **Phase 5: Advanced Features** 🔄 *PLANNED*
+### **Phase 5: Advanced Features** 🔄 _PLANNED_
+
 **Timeline: Week 9-10**
 
 #### Intelligence & Recommendations
+
 - [ ] **Recommendation Engine**
   - [ ] Reading history-based suggestions
   - [ ] Similar users' preferences
@@ -239,6 +277,7 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
   - [ ] Trending comics detection
 
 #### Analytics & Insights
+
 - [ ] **Personal Analytics**
   - [ ] Reading pattern analysis
   - [ ] Genre preference tracking
@@ -247,11 +286,14 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 
 ---
 
-### **Phase 6: Polish & Optimization** 🔄 *PLANNED*
+### **Phase 6: Polish & Optimization** 🔄 _PLANNED_
+
 **Timeline: Week 11-12**
 
 #### Performance Optimization
+
 - [ ] **Frontend Performance**
+
   - [ ] Lazy loading for large collections
   - [ ] Image optimization and caching
   - [ ] Bundle size optimization
@@ -264,6 +306,7 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
   - [ ] Error handling improvements
 
 #### Additional Features
+
 - [ ] **Data Management**
   - [ ] Export collection data
   - [ ] Import from other platforms
@@ -274,7 +317,8 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 
 ## 🛠 **TECHNOLOGY STACK**
 
-### **Frontend** ✅ *IMPLEMENTED*
+### **Frontend** ✅ _IMPLEMENTED_
+
 - **Framework**: React 19.1.1 with Vite
 - **Styling**: Tailwind CSS 4.1.13 with custom design system
 - **UI Components**: shadcn/ui with Radix UI primitives
@@ -282,14 +326,16 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 - **Icons**: Lucide React + React Icons
 - **HTTP Client**: Axios
 
-### **Backend** ✅ *BASIC IMPLEMENTATION*
+### **Backend** ✅ _BASIC IMPLEMENTATION_
+
 - **Runtime**: Node.js with Express.js
 - **Database**: Supabase (PostgreSQL)
 - **Authentication**: Supabase Auth
 - **API Proxy**: Express server for ComicVine API
 - **Environment**: dotenv for configuration
 
-### **External APIs** ✅ *INTEGRATED*
+### **External APIs** ✅ _INTEGRATED_
+
 - **ComicVine API**: Comic data and metadata
 - **Supabase**: Authentication and database
 
@@ -298,7 +344,8 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 ## 🚦 **GETTING STARTED**
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - npm or yarn
 - Supabase account
 - ComicVine API key
@@ -306,17 +353,20 @@ A comprehensive comic book tracking application built with React, Vite, and Supa
 ### Installation
 
 1. **Clone the repository**
+
 ```bash
 git clone <repository-url>
 cd comic-tracker
 ```
 
 2. **Install frontend dependencies**
+
 ```bash
 npm install
 ```
 
 3. **Install backend dependencies**
+
 ```bash
 cd backend
 npm install
@@ -325,12 +375,14 @@ npm install
 4. **Environment Setup**
 
 Frontend `.env`:
+
 ```env
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 Backend `.env`:
+
 ```env
 COMICVINE_API_KEY=your_comicvine_api_key
 ```
@@ -338,12 +390,14 @@ COMICVINE_API_KEY=your_comicvine_api_key
 5. **Start Development Servers**
 
 Backend:
+
 ```bash
 cd backend
 npm run dev
 ```
 
 Frontend:
+
 ```bash
 npm run dev
 ```
@@ -353,46 +407,43 @@ npm run dev
 ## 📊 **PROJECT METRICS**
 
 ### **Completion Status**
-- **Phase 1**: 95% Complete ✅ (Database schema, core API endpoints done)
-- **Phase 2**: 85% Complete 🔄 (Collection management mostly done, dashboard needs real data)
-- **Phase 3**: 30% Complete 🔄 (Issues grid UI done, needs click handlers; wishlist pending)
+
+- **Phase 1**: 100% Complete ✅
+- **Phase 2**: 100% Complete ✅
+- **Phase 3**: 50% Complete 🔄 (Interactive Grid done, Ratings/Wishlist pending)
 - **Phase 4**: 0% Complete (Social Features)
 - **Phase 5**: 0% Complete (Advanced Features)
 - **Phase 6**: 0% Complete (Optimization)
 
-### **Overall Progress**: ~45% Complete
+### **Overall Progress**: ~65% Complete
 
 ---
 
 ## 🎯 **IMMEDIATE NEXT STEPS**
 
-1. **Complete Issue Grid Interactivity** (Priority: High)
-   - Add click handlers to IssuesGrid component
-   - Connect issue clicks to toggle API endpoint
-   - Update UI state after toggling
+1. **Connect Rating System** (Priority: High)
 
-2. **Connect Rating System** (Priority: High)
    - Connect Rating component to update API
    - Display user ratings in comic cards
    - Show ratings in collection views
 
-3. **Dashboard Real Data Integration** (Priority: High)
-   - Replace mock "Currently Reading" data with real API calls
-   - Fetch user's reading statistics
-   - Display recently added/read comics
-   - Add collection statistics cards
+2. **Wishlist Implementation** (Priority: High)
 
-4. **Wishlist Implementation** (Priority: Medium)
    - Create wishlist API endpoints
    - Add "Add to Wishlist" button in ComicDetails
    - Create Wishlist page
    - Implement move from wishlist to collection
 
-5. **Collection Enhancements** (Priority: Medium)
+3. **Social Features** (Priority: Medium)
+
+   - Implement Public Profile view
+   - Add Follow/Unfollow functionality
+   - Create "Friends Activity" feed
+
+4. **Collection Enhancements** (Priority: Medium)
    - Add sorting options (date, rating, alphabetical)
    - Implement advanced search within collection
    - Add remove from collection functionality
-   - Collection statistics endpoint
 
 ---
 
@@ -401,6 +452,7 @@ npm run dev
 This is a personal project roadmap. The development follows the phases outlined above, with each phase building upon the previous one.
 
 ### **Development Workflow**
+
 1. Complete backend infrastructure for each phase
 2. Implement corresponding frontend features
 3. Test integration and user experience
@@ -410,23 +462,21 @@ This is a personal project roadmap. The development follows the phases outlined 
 
 ## 📝 **NOTES**
 
-- **Current Focus**: Completing Phase 2 and Phase 3 enhancements
+- **Current Focus**: Completing Phase 3 (Ratings/Wishlist) and starting Phase 4 (Social)
 - **Architecture**: Following modern React patterns with clean separation of concerns
 - **Database**: Complete schema implemented with RLS policies
-- **API Strategy**: Using proxy server to handle ComicVine API limitations
-- **UI/UX**: Implementing responsive design with accessibility in mind
-- **Key Achievements**: 
+- **Key Achievements**:
   - Full collection management system operational
-  - Issue tracking backend complete
+  - Real-time Activity Feed & Heatmap
+  - Interactive Issue Tracking
   - Comprehensive comic details page
-  - Search and discovery working
-- **Remaining Work**: 
-  - Connect UI interactions (issue clicks, ratings)
-  - Dashboard real data integration
+- **Remaining Work**:
+  - Connect Ratings
   - Wishlist functionality
+  - Social features
   - Enhanced filtering and sorting
 
 ---
 
-*Last Updated: January 2025*
-*Next Review: Ongoing*
+_Last Updated: January 2026_
+_Next Review: Ongoing_
