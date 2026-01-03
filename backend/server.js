@@ -7,7 +7,7 @@ import { createClient } from "@supabase/supabase-js";
 dotenv.config();
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 const API_KEY = process.env.COMICVINE_API_KEY;
 
 // Initialize Supabase client
@@ -16,7 +16,16 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY
 );
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:3000",
+      "https://comicvault-cyan.vercel.app",
+    ],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // Test endpoint to verify Supabase connection

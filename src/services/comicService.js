@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:3001/api";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api";
 // The base endpoint for comicbooks-api (from npm docs)
 const cleanDescription = (desc) => {
   if (!desc) return "No description available";
