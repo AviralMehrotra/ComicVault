@@ -18,6 +18,8 @@ import StatCard from "@/components/ui/StatCard";
 import Loader from "@/components/elements/Loader";
 import { useTitle } from "@/hooks/useTitle";
 import { useEffect, useState } from "react";
+import ImageUploadModal from "@/components/ui/ImageUploadModal";
+import EditProfileModal from "@/components/profile/EditProfileModal";
 
 const MyAccount = () => {
   useTitle("My Account");
@@ -31,23 +33,37 @@ const MyAccount = () => {
   const [activityDates, setActivityDates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
-  const uploadAvatar = async (event) => {
+  const handleFileSelect = (event) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        setSelectedImage(reader.result);
+        setShowCropModal(true);
+      });
+      reader.readAsDataURL(file);
+      // Reset input so same file can be selected again if needed
+      event.target.value = "";
+    }
+  };
+
+  const handleCropSave = async (croppedBlob) => {
     try {
       setUploading(true);
 
-      if (!event.target.files || event.target.files.length === 0) {
-        throw new Error("You must select an image to upload.");
-      }
-
-      const file = event.target.files[0];
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${profile.id}-${Math.random()}.${fileExt}`;
+      const fileName = `${profile.id}-${Date.now()}.jpg`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, file);
+        .upload(filePath, croppedBlob, {
+          contentType: "image/jpeg",
+          upsert: true,
+        });
 
       if (uploadError) {
         throw uploadError;
@@ -57,16 +73,20 @@ const MyAccount = () => {
         data: { publicUrl },
       } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
+      // Add timestamp to force refresh if URL is same (though filename is unique here)
+      const finalUrl = `${publicUrl}?t=${Date.now()}`;
+
       const { error: updateError } = await supabase
         .from("profiles")
-        .update({ avatar_url: publicUrl })
+        .update({ avatar_url: finalUrl })
         .eq("id", profile.id);
 
       if (updateError) {
         throw updateError;
       }
 
-      // Reload to show new avatar
+      // Close modal and reload to show new avatar
+      setShowCropModal(false);
       window.location.reload();
     } catch (error) {
       console.error("Error uploading avatar:", error);
@@ -74,6 +94,11 @@ const MyAccount = () => {
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleProfileSave = () => {
+    setShowEditModal(false);
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -117,7 +142,10 @@ const MyAccount = () => {
             <div className="flex items-center gap-6">
               <div className="relative group">
                 <Avatar className="w-24 h-24 border-4 border-background shadow-md">
-                  <AvatarImage src={profile?.avatar_url} />
+                  <AvatarImage
+                    src={profile?.avatar_url}
+                    className="object-cover"
+                  />
                   <AvatarFallback className="text-2xl bg-primary/10 text-primary">
                     {profile?.username?.charAt(0).toUpperCase() || "U"}
                   </AvatarFallback>
@@ -133,7 +161,7 @@ const MyAccount = () => {
                   id="avatar-upload"
                   accept="image/*"
                   className="hidden"
-                  onChange={uploadAvatar}
+                  onChange={handleFileSelect}
                   disabled={uploading}
                 />
               </div>
@@ -155,9 +183,14 @@ const MyAccount = () => {
               </div>
             </div>
             <div className="flex gap-3">
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => setShowEditModal(true)}
+              >
                 <Settings className="w-4 h-4" />
-                Settings
+                Edit Profile
               </Button>
               <Button variant="destructive" size="sm" onClick={signOut}>
                 Sign Out
@@ -235,6 +268,23 @@ const MyAccount = () => {
           </div>
         </div>
       </div>
+
+      {showCropModal && (
+        <ImageUploadModal
+          imageSrc={selectedImage}
+          onCancel={() => setShowCropModal(false)}
+          onCropComplete={handleCropSave}
+          uploading={uploading}
+        />
+      )}
+
+      {showEditModal && (
+        <EditProfileModal
+          profile={profile}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleProfileSave}
+        />
+      )}
     </AppLayout>
   );
 };

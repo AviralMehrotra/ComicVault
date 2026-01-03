@@ -64,8 +64,10 @@ export default function Sidebar({ children }) {
 
           <div className="border-t border-sidebar-border flex p-3 items-center justify-center bg-sidebar">
             <Avatar className="h-9 w-9 border border-sidebar-border">
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>User</AvatarFallback>
+              <AvatarImage src={profile?.avatar_url} alt={profile?.username} />
+              <AvatarFallback>
+                {profile?.username?.charAt(0).toUpperCase() || "U"}
+              </AvatarFallback>
             </Avatar>
             <div
               className={`flex justify-between items-center overflow-hidden transition-all ${
