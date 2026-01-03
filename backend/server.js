@@ -21,12 +21,18 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://localhost:3000",
-      "https://comicvault-cyan.vercel.app",
+      "https://comicvault-cyan.vercel.app", // Replace with your actual Vercel URL
+      "https://comic-vault-frontend.vercel.app" // Add any other frontend URLs
     ],
     credentials: true,
   })
 );
 app.use(express.json());
+
+// Health check endpoint for Render
+app.get("/", (req, res) => {
+  res.json({ message: "Comic Vault API is running!", status: "healthy" });
+});
 
 // Test endpoint to verify Supabase connection
 app.get("/api/test", async (req, res) => {
